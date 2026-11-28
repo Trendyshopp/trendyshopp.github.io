@@ -62,11 +62,9 @@ header{background:var(--navy);color:white;box-shadow:0 2px 8px #0002;flex:none}
 .msg{padding:30px 10px;text-align:center;color:var(--muted);grid-column:1/-1}
 .trust{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:24px 0 0}
 .trust div{background:white;border:1px solid #e4e8f0;border-radius:11px;padding:14px 8px;text-align:center;font-size:13px;font-weight:bold}.trust span{display:block;font-size:26px;margin-bottom:6px}
-.note{font-size:12px;color:var(--muted);line-height:1.5;margin-top:14px}
 footer{background:#240046;color:#dbeafe;text-align:center;padding:22px 15px;font-size:13px}
 footer a{color:#e9d5ff}
 .fly-img{position:fixed;z-index:99;pointer-events:none;border-radius:12px;object-fit:cover;transition:transform .6s cubic-bezier(.2,.8,.2,1),opacity .6s ease;box-shadow:0 8px 24px #0003}
-body.live .demo-only{display:none}
 
 /* ---------- Shared cards / bars ---------- */
 .card{background:white;border-radius:12px;border:1px solid #e4e8f0;padding:14px;margin-bottom:12px}
@@ -131,14 +129,13 @@ body.live .demo-only{display:none}
   <div class="vbody" id="homeBody">
     <section class="hero"><div><h1>Find your everyday favourites.</h1><p>Great picks. Great prices. A smarter way to shop.</p></div><div class="offer">WELCOME TO TRENDY</div></section>
     <main class="wrap">
-      <div id="dealsSec"><div class="sectionhead"><h2>Deals of the day</h2><small>Swipe →</small></div>
+      <div id="dealsSec"><div class="sectionhead"><h2>Deals of the day</h2></div>
       <div class="hstrip" id="deals"></div></div>
       <div class="chips" id="chips"></div>
-      <div class="sectionhead" id="gridHead"><h2 id="heading">Popular products</h2><small class="demo-only">Demo catalogue</small></div>
+      <div class="sectionhead" id="gridHead"><h2 id="heading">Popular products</h2></div>
       <div class="grid" id="products"></div>
-      <p class="note demo-only">Product photos and prices shown here are sample placeholders. Replace them with products you are authorised to resell, accurate descriptions, final delivered prices and your own supplier/fulfilment details before publishing.</p>
     </main>
-    <footer>© <span id="year"></span> Trendy. Shop smart, live trendy.<br><span id="support">Customer support: add your WhatsApp number in the website settings.</span></footer>
+    <footer>© <span id="year"></span> Trendy. Shop smart, live trendy.<span id="support"></span></footer>
   </div>
 </div>
 
@@ -287,7 +284,7 @@ const LIVE=!!SHEET_CSV_URL;
 if(LIVE)document.body.classList.add("live");
 $("year").textContent=new Date().getFullYear();
 if(!STORE_WHATSAPP.includes("X")){
-  $("support").innerHTML='Customer support: <a href="https://wa.me/'+esc(STORE_WHATSAPP)+'" target="_blank" rel="noopener">chat with us on WhatsApp</a>';
+  $("support").innerHTML='<br>Customer support: <a href="https://wa.me/'+esc(STORE_WHATSAPP)+'" target="_blank" rel="noopener">chat with us on WhatsApp</a>';
 }
 
 /* ================= Load products ================= */
@@ -468,7 +465,7 @@ function placeOrder(){
   const name=$("customer").value.trim(),address=$("address").value.trim(),phone=cleanPhone($("phone").value);
   if(!name||!$("phone").value.trim()||!address){formError("Please enter your name, mobile number and full delivery address.");return}
   if(!/^[6-9]\d{9}$/.test(phone)){formError("Enter a valid 10-digit mobile number.");return}
-  if(STORE_WHATSAPP.includes("X")){formError("Store owner: set STORE_WHATSAPP in the website code first.");return}
+  if(STORE_WHATSAPP.includes("X")){console.warn("STORE_WHATSAPP is not set in index.html");formError("Ordering is temporarily unavailable. Please try again later.");return}
   const payment=document.querySelector('input[name="payment"]:checked').value;
   const lines=cart.map(x=>{const p=byId(x.id);return p?`${p.name} x ${x.qty} = Rs.${p.price*x.qty}`:""}).filter(Boolean).join("\n");
   const msg=`Hello Trendy! I want to place an order:\n${lines}\nTotal: Rs.${cartTotal()}\nName: ${name}\nPhone: ${phone}\nAddress: ${address}\nPayment preference: ${payment}`;
